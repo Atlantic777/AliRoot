@@ -524,6 +524,7 @@ validateLog()
             'E-AliCDBGrid::PutEntry:'
             'F-AliCDBGrid::'
             'E-TAlienFile::ReadBuffer: The remote'
+            'E-TJAlienFile::ReadBuffer: The remote'
             'Compilation failed'
             'Low statistics: number of contributing tracks'
   )
