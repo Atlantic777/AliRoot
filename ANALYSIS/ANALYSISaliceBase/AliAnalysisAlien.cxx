@@ -1294,21 +1294,19 @@ Bool_t AliAnalysisAlien::CreateDataset(const char *pattern)
             }         
          }
          if (ncount == gMaxEntries) {
-            Info("CreateDataset", "Dataset %s has more than 15K entries. Trying to merge...", file.Data());
-            cadd = gGrid->OpenCollection(Form("__tmp%d__%s", stage, file.Data()), 1000000);
-            if (!cbase) cbase = cadd;
-            else {
-	      // cholm - Avoid using very slow TAlienCollection 
-	      // cbase->Add(cadd);
-	      // cholm - Use AddFast (via interpreter)
-        // TODO: nhardi, Jan 2019
-	      gROOT->ProcessLine(Form("((TAlienCollection*)%p)->AddFast((TGridCollection*)%p)",cbase,cadd));
-               delete cadd;
-            }   
-            nstart += ncount;
+           Info("CreateDataset", "Dataset %s has more than 15K entries. Trying to merge...", file.Data());
+           cadd = gGrid->OpenCollection(Form("__tmp%d__%s", stage, file.Data()), 1000000);
+           if (!cbase) cbase = cadd;
+           else {
+             // nhardi: Switching back to TGridCollection::Add() in order to respect the TGridCollection public interface.
+             cbase->Add(cadd);
+             delete cadd;
+           }
+           nstart += ncount;
          } else {
             if (cbase) {
-               cadd = (TGridCollection*)gROOT->ProcessLine(Form("new TAlienCollection(\"__tmp%d__%s\", 1000000);",stage,file.Data()));
+               // cadd = (TGridCollection*)gROOT->ProcessLine(Form("new TAlienCollection(\"__tmp%d__%s\", 1000000);",stage,file.Data()));
+               cadd = gGrid->OpenCollection(Form("__tmp%d__%s", stage, file.Data()), 1000000);
                printf("... please wait - TAlienCollection::Add() scales badly...\n");
 	      // cholm - Avoid using very slow TAlienCollection 
 	      // cbase->Add(cadd);
